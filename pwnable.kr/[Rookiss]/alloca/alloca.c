@@ -2,28 +2,34 @@
 #include <string.h>
 #include <stdlib.h>
 
-void callme(){
+void callme()
+{
 	system("/bin/sh");
 }
 
-void clear_newlines(){
+void clear_newlines()
+{
 	int c;
-	do{
+	do
+	{
 		c = getchar();
-	}while (c != '\n' && c != EOF);
+	} while (c != '\n' && c != EOF);
 }
 
 int g_canary;
-int check_canary(int canary){
+int check_canary(int canary)
+{
 	int result = canary ^ g_canary;
 	int canary_after = canary;
 	int canary_before = g_canary;
 	printf("canary before using buffer : %d\n", canary_before);
 	printf("canary after using buffer : %d\n\n", canary_after);
-	if(result != 0){
+	if (result != 0)
+	{
 		printf("what the ....??? how did you messed this buffer????\n");
 	}
-	else{
+	else
+	{
 		printf("I told you so. its trivially easy to prevent BOF :)\n");
 		printf("therefore as you can see, it is easy to make secure software\n");
 	}
@@ -31,8 +37,9 @@ int check_canary(int canary){
 }
 
 int size;
-char* buffer;
-int main(){
+char *buffer;
+int main()
+{
 
 	printf("- BOF(buffer overflow) is very easy to prevent. here is how to.\n\n");
 	sleep(1);
@@ -46,27 +53,26 @@ int main(){
 	scanf("%d", &size);
 	clear_newlines();
 
-        printf("- give me your random canary number to prove there is no BOF : ");
-        scanf("%d", &g_canary);
-        clear_newlines();
+	printf("- give me your random canary number to prove there is no BOF : ");
+	scanf("%d", &g_canary);
+	clear_newlines();
 
 	printf("- ok lets allocate a buffer of length %d\n\n", size);
 	sleep(1);
 
-	buffer = alloca( size + 4 );	// 4 is for canary
+	buffer = alloca(size + 4); // 4 is for canary
 
 	printf("- now, lets put canary at the end of the buffer and get your data\n");
 	printf("- don't worry! fgets() securely limits your input after %d bytes :)\n", size);
 	printf("- if canary is not changed, we can prove there is no BOF :)\n");
 	printf("$ ");
 
-	memcpy(buffer+size, &g_canary, 4);	// canary will detect overflow.
-	fgets(buffer, size, stdin);		// there is no way you can exploit this.
+	memcpy(buffer + size, &g_canary, 4); // canary will detect overflow.
+	fgets(buffer, size, stdin);			 // there is no way you can exploit this.
 
 	printf("\n");
 	printf("- now lets check canary to see if there was overflow\n\n");
 
-	check_canary( *((int*)(buffer+size)) );
+	check_canary(*((int *)(buffer + size)));
 	return 0;
 }
-
